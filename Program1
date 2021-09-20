@@ -1,0 +1,93 @@
+/* Create 3 realtime tasks each with the periodcity T1=1000ms, T2=2000ms, T3=5000ms. Also create two additional task T4 and T5 where T4 sends integer data to T5 using Messsage Queues. */
+
+#include <stdio.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/queue.h"
+
+QueueHandle_t intmq;
+
+void T1_task(void *data)
+{
+    while(1)
+    {
+        printf(" task1 started \n");
+        
+        printf(" task1 ended \n");
+        vTaskDelay(1000/ portTICK_PERIOD_MS);
+
+    }
+}
+
+void T2_task(void *data)
+{
+    while(1)
+    {
+        printf(" task2 started \n");
+        
+        printf(" task2 ended \n");
+        vTaskDelay(2000/ portTICK_PERIOD_MS);
+
+    }
+}
+
+void T3_task(void *data)
+{
+    while(1)
+    {
+        printf(" task3 started \n");
+        
+        printf(" task3 ended \n");
+        vTaskDelay(5000/ portTICK_PERIOD_MS);
+
+    }
+}
+
+
+
+
+void T4_task(void *data)
+{
+    int integer = 50;
+    while(1)
+    {
+        printf(" task4 started \n");
+        
+        
+        printf(" task4 ended \n");
+        xQueueSend(intmq,&integer, 0);
+        vTaskDelay(3000/ portTICK_PERIOD_MS);
+
+    }
+}
+
+
+void T5_task(void *data)
+{
+    int buff;
+    
+    while(1)
+    {
+        printf("task5 started \n");
+        xQueueReceive(intmq,&buff, 0);
+        printf("integer from task4 is: %d\n",buff);
+    
+        printf(" task5 ended \n");
+        vTaskDelay(3000/ portTICK_PERIOD_MS);
+      
+    }
+   
+}
+
+
+
+void app_main(void)
+{
+    xTaskCreate(T1_task, "T1", 2048, NULL, 11, NULL);
+    xTaskCreate(T2_task, "T2", 2048, NULL, 9, NULL);
+    xTaskCreate(T3_task, "T3", 2048, NULL, 7, NULL);
+    xTaskCreate(T4_task, "T4", 2048, NULL, 5, NULL);
+    xTaskCreate(T5_task, "T5", 2048, NULL, 3, NULL);
+    intmq = xQueueCreate(3, sizeof(int));
+   
+}
