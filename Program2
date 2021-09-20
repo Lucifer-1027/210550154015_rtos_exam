@@ -45,7 +45,7 @@ void *const timer_id;
 
 TimerHandle_t timer_handle;
 
-void task3(void *param)
+void T3(void *param)
 {
     timer_handle = xTimerCreate("timer",(10000 / portTICK_PERIOD_MS),pdFALSE,timer_id, callback);
 
